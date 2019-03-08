@@ -8,8 +8,8 @@ deploy:
   - provider: npm
     email: phil@marketprotocol.io
     skip_cleanup: true
-    api_key: 
-      secure: 'NPM_API_KEY'
+    api_key:
+      secure: Ex8ZyCznzmBI5W2sD7J862Knb6kcIbWej6YpJkncO9nkixeKVG9G/E36hXJVJjng3AWnCGjPDU9ppNColBG1tHeDV5pJmfsQieR6Mhvp7X2h+DUIkxvSI45pzMrVVVXZPfFIgUiMzH0qg8UVM8UoB5GtC7B0qg9JVjX5uZSjSA684ehMj19mgX+5Cn83NQcyEdofgEhR7hM9FxVwiQ4/7qgZtG0Fnthpb6+QqgPaaHc0cqK69F7kxZcm9fjkmyQQ6vVbli+IXLlym27qneXQ4xbDXIn6RolXFpjQKqQtFt32YFEqn5OGr8mQ3e28S5umlG6/5+/RdKIEb7PsBNKolRsGGvnMnQc8IruI3yMz98X4cAMfF+HYlGAeANx7lZkAjCZRzuWM9eeijd3N2PtJCTIruAw+BuJDVdQwY6XNJT+GIYfEYWo1FjGyUKSEa+hjdOHQ1tEtZeLn1XIcibcczNS5glEH8TKDwwTlW+pj8TugMPfN02RNfwg78+Ccly3YyRPHHTEHjYZku0NGdvt4DR5nu+3vOC8QnMAeFaFHTQh34qiCRucP8fACnPlkGnSZhxpNzXWPj34OOvu1JRu1ZONvZmBL7H2w8PNE2FTq9yhaIy0Bb4sLAVHV3R5/apGWYV1/yNYD/9yDlCtRxgjgREheZS0ZY7EfcEyJUjQR6xQ=
     on:
       branch: master
       tags: true
