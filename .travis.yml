@@ -8,7 +8,8 @@ deploy:
   - provider: npm
     email: phil@marketprotocol.io
     skip_cleanup: true
-    api_key: 'NPM_API_KEY'
+    api_key: 
+      secure: 'NPM_API_KEY'
     on:
       branch: master
       tags: true
