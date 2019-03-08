@@ -1,0 +1,39 @@
+{
+  "name": "@marketprotocol/mpx-api-client",
+  "version": "1.0.0-alpha1",
+  "description": "Javascript client for communicating with the MPX API",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build": "babel mpxAPI.js -o index.js",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MARKETProtocol/mpx-api-client.git"
+  },
+  "keywords": [
+    "mpx",
+    "api",
+    "client"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/MARKETProtocol/mpx-api-client/issues"
+  },
+  "homepage": "https://github.com/MARKETProtocol/mpx-api-client#readme",
+  "dependencies": {
+    "jsonapi-serializer": "^3.6.4",
+    "lodash": "^4.17.11"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "fetch-mock": "^7.3.1",
+    "jest": "^24.3.0",
+    "node-fetch": "^2.3.0"
+  }
+}

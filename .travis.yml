@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "8"
+
+cache: npm
+
+deploy:
+  - provider: npm
+    email: phil@marketprotocol.io
+    skip_cleanup: true
+    api_key: 'NPM_API_KEY'
+    on:
+      branch: master
+      tags: true
