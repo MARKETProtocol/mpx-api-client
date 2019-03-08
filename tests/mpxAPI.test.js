@@ -1,4 +1,4 @@
-import { Path, mpxAPI, setHost, Errors, ServerError } from '../mpxAPI';
+import { Path, mpxAPI, setHost, Errors, MPXAPIError } from '../mpxAPI';
 
 const fetchMock = require('fetch-mock');
 
@@ -24,7 +24,7 @@ describe('mpxAPI', () => {
   });
 
   describe('get', () => {
-    it('should reject with ServerError if status code is not 200', () => {
+    it('should reject with MPXAPIError if status code is not 200', () => {
       const path = Path.Fills;
       fetchMock.get(new RegExp(path), {
         status: 400,
@@ -43,7 +43,8 @@ describe('mpxAPI', () => {
 
       return getClient().get(path)
         .catch(err => {
-          expect(err).toBeInstanceOf(ServerError);
+          expect(Array.isArray(err)).toBe(true);
+          expect(err[0]).toBeInstanceOf(MPXAPIError);
         });
     });
   });
@@ -68,7 +69,8 @@ describe('mpxAPI', () => {
 
       return getClient().post(path, {})
         .catch(err => {
-          expect(err).toBeInstanceOf(ServerError);
+          expect(Array.isArray(err)).toBe(true);
+          expect(err[0]).toBeInstanceOf(MPXAPIError);
         });
     });
   });

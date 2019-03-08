@@ -1,18 +1,16 @@
 import without from 'lodash/without';
 import kebabCase from 'lodash/kebabCase';
 import pick from 'lodash/pick';
-
+import map from 'lodash/map';
 
 let host;
 
 export const Errors = {
-  HOST_NOT_SET_ERROR: new Error(`host url not set. Inove the 'setHost()' function with your mpxAPI host`)
+  HOST_NOT_SET_ERROR: new Error(`host url not set. Invoke the 'setHost()' function with your mpxAPI host`)
 }
 
-export class ServerError extends Error {
-  constructor(errors) {
-    // only process first error if array
-    const error = Array.isArray(errors) ? errors[0] : errors;
+export class MPXAPIError extends Error {
+  constructor(error) {
     super(error.detail);
 
     // set error properties on the property error
@@ -110,7 +108,10 @@ const jsonAPIResponseHandler = deserialize => response => {
 
   return response.json().then(json => {
     if (!response.ok) {
-      return Promise.reject(new ServerError(json.errors));
+      return Promise.reject(map(
+        json.errors,
+        error => new MPXAPIError(error))
+      );
     }
 
     if (deserialize) {
