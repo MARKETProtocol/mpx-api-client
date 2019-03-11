@@ -1,4 +1,4 @@
-import { Path, mpxAPI, setHost, Errors, MPXAPIError } from '../mpxAPI';
+import { Path, mpxAPI, Errors, MPXAPIError } from '../mpxAPI';
 
 const fetchMock = require('fetch-mock');
 
@@ -8,7 +8,7 @@ const fetchMock = require('fetch-mock');
  * @return {mpxAPI}
  */
 const getClient = (hostUrl = 'https://stub-url.com') => {
-  setHost(hostUrl);
+  mpxAPI.setHost(hostUrl);
   return mpxAPI;
 }
 
