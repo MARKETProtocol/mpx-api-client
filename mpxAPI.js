@@ -141,8 +141,8 @@ export const Path = {
   Me: '/me',
   OrderBook: '/orderbooks',
   Orders: '/orders',
-  Settings: '/settings'
-  TokenPairs: '/token_pairs',
+  Settings: '/settings',
+  TokenPairs: '/token_pairs'
 };
 
 export const mpxAPI = {
