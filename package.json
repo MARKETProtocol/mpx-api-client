@@ -1,6 +1,6 @@
 {
   "name": "@marketprotocol/mpx-api-client",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Javascript client for communicating with the MPX API",
   "main": "index.js",
   "scripts": {
