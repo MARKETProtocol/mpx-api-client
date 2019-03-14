@@ -11,7 +11,7 @@ export const Errors = {
 
 export class MPXAPIError extends Error {
   constructor(error) {
-    super(error.detail);
+    super(error.detail || error.title);
 
     // set error properties on the property error
     Object.assign(
@@ -132,7 +132,30 @@ const jsonAPIResponseHandler = deserialize => response => {
   });
 };
 
+// paths to API resources
+export const Path = {
+  Contracts: '/contracts',
+  FeeRecipients: '/fee_recipients',
+  Fills: '/fills',
+  JWT: '/json_web_tokens',
+  Me: '/me',
+  OrderBook: '/orderbooks',
+  Orders: '/orders',
+  Settings: '/settings',
+  TokenPairs: '/token_pairs'
+};
+
 export const mpxAPI = {
+  /**
+   * Set host for mpx-api
+   * example https://api.mpxechange.io
+   *
+   * @param {string} newHost apiHost
+   */
+  setHost(newHost) {
+    host = newHost;
+  },
+
   /**
    * Makes a GET request to the mpxAPI resource at `path`.
    *
@@ -263,26 +286,9 @@ export const mpxAPI = {
       method: 'DELETE',
       headers: createHeader(authorizationToken)
     }).then(jsonAPIResponseHandler(deserialize));
-  }
-};
+  },
 
-// paths to API resources
-export const Path = {
-  JWT: '/json_web_tokens',
-  Contracts: '/contracts',
-  Orders: '/orders',
-  OrderBook: '/orderbooks',
-  Fills: '/fills',
-  TokenPairs: '/token_pairs'
+  Path,
 };
-
-/**
- * 
- * @param {*} newHost 
- */
-export const setHost = newHost => {
-  host = newHost;
-};
-
 
 export default mpxAPI;
