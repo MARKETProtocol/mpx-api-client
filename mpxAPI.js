@@ -134,19 +134,22 @@ const jsonAPIResponseHandler = deserialize => response => {
 
 // paths to API resources
 export const Path = {
-  JWT: '/json_web_tokens',
   Contracts: '/contracts',
-  Orders: '/orders',
-  OrderBook: '/orderbooks',
+  FeeRecipients: '/fee_recipients',
   Fills: '/fills',
-  TokenPairs: '/token_pairs'
+  JWT: '/json_web_tokens',
+  Me: '/me',
+  OrderBook: '/orderbooks',
+  Orders: '/orders',
+  Settings: '/settings'
+  TokenPairs: '/token_pairs',
 };
 
 export const mpxAPI = {
   /**
    * Set host for mpx-api
    * example https://api.mpxechange.io
-   * 
+   *
    * @param {string} newHost apiHost
    */
   setHost(newHost) {
@@ -284,7 +287,7 @@ export const mpxAPI = {
       headers: createHeader(authorizationToken)
     }).then(jsonAPIResponseHandler(deserialize));
   },
-  
+
   Path,
 };
 
