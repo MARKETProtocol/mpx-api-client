@@ -3,13 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.setHost = exports.Path = exports.mpxAPI = exports.ServerError = exports.Errors = void 0;
+exports.default = exports.setHost = exports.Path = exports.mpxAPI = exports.MPXAPIError = exports.Errors = void 0;
 
 var _without = _interopRequireDefault(require("lodash/without"));
 
 var _kebabCase = _interopRequireDefault(require("lodash/kebabCase"));
 
 var _pick = _interopRequireDefault(require("lodash/pick"));
+
+var _map = _interopRequireDefault(require("lodash/map"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -37,29 +39,27 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 var host;
 var Errors = {
-  HOST_NOT_SET_ERROR: new Error("host url not set. Inove the 'setHost()' function with your mpxAPI host")
+  HOST_NOT_SET_ERROR: new Error("host url not set. Invoke the 'setHost()' function with your mpxAPI host")
 };
 exports.Errors = Errors;
 
-var ServerError =
+var MPXAPIError =
 /*#__PURE__*/
 function (_Error) {
-  _inherits(ServerError, _Error);
+  _inherits(MPXAPIError, _Error);
 
-  function ServerError(errors) {
+  function MPXAPIError(error) {
     var _this;
 
-    _classCallCheck(this, ServerError);
+    _classCallCheck(this, MPXAPIError);
 
-    // only process first error if array
-    var error = Array.isArray(errors) ? errors[0] : errors;
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ServerError).call(this, error.detail)); // set error properties on the property error
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MPXAPIError).call(this, error.detail)); // set error properties on the property error
 
     Object.assign(_assertThisInitialized(_this), (0, _pick.default)(error, ['id', 'status', 'code', 'title', 'detail']));
     return _this;
   }
 
-  return ServerError;
+  return MPXAPIError;
 }(_wrapNativeSuper(Error));
 /**
  * Appends correct host to path
@@ -71,7 +71,7 @@ function (_Error) {
  */
 
 
-exports.ServerError = ServerError;
+exports.MPXAPIError = MPXAPIError;
 
 var url = function url(path, filterString, id) {
   if (typeof host !== 'string') {
@@ -151,7 +151,9 @@ var jsonAPIResponseHandler = function jsonAPIResponseHandler(deserialize) {
 
     return response.json().then(function (json) {
       if (!response.ok) {
-        return Promise.reject(new ServerError(json.errors));
+        return Promise.reject((0, _map.default)(json.errors, function (error) {
+          return new MPXAPIError(error);
+        }));
       }
 
       if (deserialize) {
@@ -332,11 +334,14 @@ var Path = {
   Orders: '/orders',
   OrderBook: '/orderbooks',
   Fills: '/fills',
-  TokenPairs: '/token_pairs'
+  TokenPairs: '/token_pairs',
+  Me: '/me',
+  FeeRecipients: '/fee_recipients',
+  Settings: '/settings'
 };
 /**
- * 
- * @param {*} newHost 
+ *
+ * @param {*} newHost
  */
 
 exports.Path = Path;
