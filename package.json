@@ -7,7 +7,7 @@
     "build": "babel mpxAPI.js -o index.js",
     "docs": "npm run docs:html && npm run docs:md",
     "docs:html": "rm -rf docs && jsdoc -c .jsdoc.json",
-    "docs:md": "jsdoc2md --files mpxAPI.js > docs/api.md",
+    "docs:md": "rm -f docs/api.md && jsdoc2md --files mpxAPI.js > docs/api.md",
     "prepublish": "npm run build",
     "test": "jest",
     "test:watch": "jest --watch"

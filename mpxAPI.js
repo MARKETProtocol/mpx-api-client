@@ -209,17 +209,54 @@ const jsonAPIResponseHandler = deserialize => response => {
  */
 export const Path = {
   /**
-   * Access root file
+   * Path to list a summary of all resources and their actions.
+   * 
    */
   Root: '/',
+  /**
+   * Path to contract resources.
+   * 
+   */
   Contracts: '/contracts',
+  /**
+   * Path to fee receipeint resources.
+   * 
+   */
   FeeRecipients: '/fee_recipients',
+  /**
+   * Path to fills resources.
+   * 
+   */
   Fills: '/fills',
+  /**
+   * Path to perform jwt authentication.
+   * 
+   */
   JWT: '/json_web_tokens',
+  /**
+   * Path to profile of current authenticated user.
+   * 
+   */
   Me: '/me',
+  /**
+   * Path to orderbook resources.
+   * 
+   */
   OrderBook: '/orderbooks',
+  /**
+   * Path to order resources on the API.
+   * 
+   */
   Orders: '/orders',
+  /**
+   * Path to API settings
+   * 
+   */
   Settings: '/settings',
+  /**
+   * Path to fetch token pairs on the API.
+   * 
+   */
   TokenPairs: '/token_pairs'
 };
 

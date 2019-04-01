@@ -54,10 +54,77 @@ Path constants that should be used when calling any of the `get`, `post`, etc.
 functions on the mpxAPI client
 
 **Kind**: global namespace  
+
+* [Path](#Path) : <code>object</code>
+    * [.Root](#Path.Root)
+    * [.Contracts](#Path.Contracts)
+    * [.FeeRecipients](#Path.FeeRecipients)
+    * [.Fills](#Path.Fills)
+    * [.JWT](#Path.JWT)
+    * [.Me](#Path.Me)
+    * [.OrderBook](#Path.OrderBook)
+    * [.Orders](#Path.Orders)
+    * [.Settings](#Path.Settings)
+    * [.TokenPairs](#Path.TokenPairs)
+
 <a name="Path.Root"></a>
 
 ### Path.Root
-Access root file
+Path to list a summary of all resources and their actions.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.Contracts"></a>
+
+### Path.Contracts
+Path to contract resources.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.FeeRecipients"></a>
+
+### Path.FeeRecipients
+Path to fee receipeint resources.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.Fills"></a>
+
+### Path.Fills
+Path to fills resources.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.JWT"></a>
+
+### Path.JWT
+Path to perform jwt authentication.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.Me"></a>
+
+### Path.Me
+Path to profile of current authenticated user.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.OrderBook"></a>
+
+### Path.OrderBook
+Path to orderbook resources.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.Orders"></a>
+
+### Path.Orders
+Path to order resources on the API.
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.Settings"></a>
+
+### Path.Settings
+Path to API settings
+
+**Kind**: static property of [<code>Path</code>](#Path)  
+<a name="Path.TokenPairs"></a>
+
+### Path.TokenPairs
+Path to fetch token pairs on the API.
 
 **Kind**: static property of [<code>Path</code>](#Path)  
 <a name="mpxAPI"></a>
