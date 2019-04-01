@@ -3,11 +3,36 @@ import kebabCase from 'lodash/kebabCase';
 import pick from 'lodash/pick';
 import map from 'lodash/map';
 
+/////// Type Definitions
+/**
+ * Callback for handling a response.
+ * Error would usually be an array of MPXAPIErrors.
+ * 
+ * @callback ResponseHandler
+ * @param {Error} err - Error if any, null if no error
+ * @param {object} data - Parse json-api response data.
+ */
+
+/**
+ * Extra Options objects that are passed to request methods on the
+ * 
+ * 
+ * @typedef {Object} RequestOptions
+ * @property {string} id String value that overrides the id on the resource being requested. defaults to `null`.
+ * @property {string} filterString Filter string, primarily used in get requests. defaults to `null`.
+ * @property {boolean} serializeRequest Flag to state if the payload has should be json-api serialized. defaults to `true`.
+ * @property {boolean} deserialize Flag to state if the response from a request should be json-api deserialized or note. defaults to `false`.
+ * @property {string} authorizationToken Authorization token. Required for request to authenticated paths.
+ */
+
+////// end Type Definitions
+
 let host;
 
 /**
  * Cache to track register global response handler
  * 
+ * @private
  */
 let globalResponseHandler = {
   handler: null,
@@ -31,7 +56,17 @@ export const Errors = {
   HOST_NOT_SET_ERROR: new Error(`host url not set. Invoke the 'setHost()' function with your mpxAPI host`)
 }
 
+/**
+ * MPXAPIError represents an Error that is gotten from the api response.
+ * It is usually returned as an Array of MPXAPIError.
+ * 
+ */
 export class MPXAPIError extends Error {
+  /**
+   * 
+   * @constructor
+   * @param {Error} error 
+   */
   constructor(error) {
     super(error.detail || error.title);
 
@@ -46,6 +81,7 @@ export class MPXAPIError extends Error {
 /**
  * Appends correct host to path
  *
+ * @private
  * @param {string} path
  * @param {string} filterString
  * @param {string} id
@@ -74,6 +110,7 @@ const url = (path, filterString, id) => {
  * array, it doesn't extract id from path segment
  *
  *
+ * @private
  * @param {string} path
  * @param {object | object[]} body
  */
@@ -95,12 +132,20 @@ const serializeRequest = (path, body) => {
   return serializedRequest;
 };
 
+/**
+ * 
+ * @private
+ * @param {string} path 
+ * @param {object | object[]} body 
+ * @param {boolean} serialize 
+ */
 const jsonAPIRequestHandler = (path, body, serialize) =>
   JSON.stringify(serialize ? serializeRequest(path, body) : body);
 
 /**
  * Create Auth/UnAuthed Header
  *
+ * @private
  * @param {string} authorizationToken
  */
 const createHeader = authorizationToken => {
@@ -120,8 +165,8 @@ const createHeader = authorizationToken => {
  * Create a response handle for api requests.
  * Takes an argument to deserialize response according to jsonapi
  *
+ * @private
  * @param {bool} deserialize
- * @return {(object): object}
  */
 const jsonAPIResponseHandler = deserialize => response => {
   if (response.status === 204) {
@@ -156,8 +201,17 @@ const jsonAPIResponseHandler = deserialize => response => {
   });
 };
 
-// paths to API resources
+/**
+ * Path constants that should be used when calling any of the `get`, `post`, etc.
+ * functions on the mpxAPI client
+ * 
+ * @namespace
+ */
 export const Path = {
+  /**
+   * Access root file
+   */
+  Root: '/',
   Contracts: '/contracts',
   FeeRecipients: '/fee_recipients',
   Fills: '/fills',
@@ -169,6 +223,25 @@ export const Path = {
   TokenPairs: '/token_pairs'
 };
 
+/**
+ * mpxAPI client namespace object.
+ * 
+ * Use the methods on this to to make requests
+ * 
+ * @example
+ * ```
+ * import { mpxAPI, Path } from '@marketprotocol/mpx-api-client'
+ * 
+ * mpxAPI.setHost('https://host-for-mpx-client');
+ * 
+ * // fetch all token pairs
+ * mpxAPI.get(Path.TokenPairs)
+ *  .then(tokenPairs, () => {
+ *    // do what you want tokenPairs
+ *  });
+ * ```
+ * @namespace
+ */
 export const mpxAPI = {
   /**
    * Set host for mpx-api
@@ -186,8 +259,8 @@ export const mpxAPI = {
    * 
    * To unregister pass in a null handler argument.
    * 
-   * @param {(err: Error, response: Object) => Promise<void>} handler 
-   * @param {boolean} deserialize
+   * 
+   * @param {ResponseHandler} handler
    */
   setGlobalResponseHandler(handler) {
     if (handler !== null && typeof handler !== 'function') {
@@ -200,10 +273,9 @@ export const mpxAPI = {
   /**
    * Makes a GET request to the mpxAPI resource at `path`.
    *
-   * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {bool} toJson Flag to convert result to
-   * @return {Promise<*>} result of request
+   * @param {string} path - Path to request API
+   * @param {RequestOptions} options Extra request options
+   * @return {Promise<*>} - Result of request
    */
   get(
     path,
@@ -222,12 +294,11 @@ export const mpxAPI = {
   },
 
   /**
-   * Makes a POST request to the marketAPI resource at `path`.
+   * Makes a POST request to the mpxAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {body} body Payload Object
-   * @param {bool} deserialize Flag to convert result to
+   * @param {Object} body Request body payload
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   post(
@@ -253,9 +324,8 @@ export const mpxAPI = {
    * Makes a PATCH request to the marketAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {body} body OpenOrder Object
-   * @param {bool} deserialize Flag to convert result to
+   * @param {Object} body Request body payload
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   patch(
@@ -281,9 +351,8 @@ export const mpxAPI = {
    * Makes a PUT request to the marketAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {body} body OpenOrder Object
-   * @param {bool} deserialize Flag to convert result to
+   * @param {Object} body Request body payload
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   put(
@@ -309,8 +378,7 @@ export const mpxAPI = {
    * Makes a DELETE request to the marketAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {bool} deserialize Flag to convert result to
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   delete(
@@ -329,7 +397,9 @@ export const mpxAPI = {
     }).then(jsonAPIResponseHandler(deserialize));
   },
 
+  /**
+   * Alias for the global named export `Path`.
+   * Added for convenience
+   */
   Path,
 };
-
-export default mpxAPI;
