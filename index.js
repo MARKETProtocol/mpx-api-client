@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.setHost = exports.Path = exports.mpxAPI = exports.MPXAPIError = exports.Errors = void 0;
+exports.default = exports.mpxAPI = exports.Path = exports.MPXAPIError = exports.Errors = void 0;
 
 var _without = _interopRequireDefault(require("lodash/without"));
 
@@ -53,7 +53,7 @@ function (_Error) {
 
     _classCallCheck(this, MPXAPIError);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(MPXAPIError).call(this, error.detail)); // set error properties on the property error
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(MPXAPIError).call(this, error.detail || error.title)); // set error properties on the property error
 
     Object.assign(_assertThisInitialized(_this), (0, _pick.default)(error, ['id', 'status', 'code', 'title', 'detail']));
     return _this;
@@ -170,9 +170,32 @@ var jsonAPIResponseHandler = function jsonAPIResponseHandler(deserialize) {
       }
     });
   };
-};
+}; // paths to API resources
 
+
+var Path = {
+  Contracts: '/contracts',
+  FeeRecipients: '/fee_recipients',
+  Fills: '/fills',
+  JWT: '/json_web_tokens',
+  Me: '/me',
+  OrderBook: '/orderbooks',
+  Orders: '/orders',
+  Settings: '/settings',
+  TokenPairs: '/token_pairs'
+};
+exports.Path = Path;
 var mpxAPI = {
+  /**
+   * Set host for mpx-api
+   * example https://api.mpxechange.io
+   *
+   * @param {string} newHost apiHost
+   */
+  setHost: function setHost(newHost) {
+    host = newHost;
+  },
+
   /**
    * Makes a GET request to the mpxAPI resource at `path`.
    *
@@ -324,32 +347,9 @@ var mpxAPI = {
       method: 'DELETE',
       headers: createHeader(authorizationToken)
     }).then(jsonAPIResponseHandler(deserialize));
-  }
-}; // paths to API resources
-
+  },
+  Path: Path
+};
 exports.mpxAPI = mpxAPI;
-var Path = {
-  JWT: '/json_web_tokens',
-  Contracts: '/contracts',
-  Orders: '/orders',
-  OrderBook: '/orderbooks',
-  Fills: '/fills',
-  TokenPairs: '/token_pairs',
-  Me: '/me',
-  FeeRecipients: '/fee_recipients',
-  Settings: '/settings'
-};
-/**
- *
- * @param {*} newHost
- */
-
-exports.Path = Path;
-
-var setHost = function setHost(newHost) {
-  host = newHost;
-};
-
-exports.setHost = setHost;
 var _default = mpxAPI;
 exports.default = _default;

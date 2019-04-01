@@ -5,6 +5,28 @@ import map from 'lodash/map';
 
 let host;
 
+/**
+ * Cache to track register global response handler
+ * 
+ */
+let globalResponseHandler = {
+  handler: null,
+  invoke: function(err, data) {
+    if (this.handler) {
+      try {
+        const response = this.handler(err, data);
+        if (response.catch) {
+          response.catch(err => {
+            // prevent promise handlers from erroring
+          })
+        }
+      } catch (err) {
+        // catch any error in handler
+      }
+    }
+  }
+};
+
 export const Errors = {
   HOST_NOT_SET_ERROR: new Error(`host url not set. Invoke the 'setHost()' function with your mpxAPI host`)
 }
@@ -103,15 +125,18 @@ const createHeader = authorizationToken => {
  */
 const jsonAPIResponseHandler = deserialize => response => {
   if (response.status === 204) {
+    globalResponseHandler.invoke(null, response);
     return response;
   }
 
   return response.json().then(json => {
     if (!response.ok) {
-      return Promise.reject(map(
+      const error = map(
         json.errors,
-        error => new MPXAPIError(error))
+        error => new MPXAPIError(error)
       );
+      globalResponseHandler.invoke(error);
+      return Promise.reject(error);
     }
 
     if (deserialize) {
@@ -120,12 +145,11 @@ const jsonAPIResponseHandler = deserialize => response => {
         keyForAttribute: 'camelCase'
       };
 
-      return new JSONAPIDeserializer(opts).deserialize(
-        json,
-        (err, deserializedResponse) => {
-          return deserializedResponse;
-        }
-      );
+      return new JSONAPIDeserializer(opts).deserialize(json)
+        .then(deserializedData => {
+          globalResponseHandler.invoke(null, deserializedData);
+          return deserializedData;
+        });
     } else {
       return json;
     }
@@ -154,6 +178,23 @@ export const mpxAPI = {
    */
   setHost(newHost) {
     host = newHost;
+  },
+
+  /**
+   * Register a global response handler. 
+   * All response from all requests would be send to this handler is set.
+   * 
+   * To unregister pass in a null handler argument.
+   * 
+   * @param {(err: Error, response: Object) => Promise<void>} handler 
+   * @param {boolean} deserialize
+   */
+  setGlobalResponseHandler(handler) {
+    if (handler !== null && typeof handler !== 'function') {
+      throw new Error('global response handler must either be null or a function.');
+    }
+
+    globalResponseHandler.handler = handler;
   },
 
   /**
