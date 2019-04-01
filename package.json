@@ -4,10 +4,13 @@
   "description": "Javascript client for communicating with the MPX API",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
     "build": "babel mpxAPI.js -o index.js",
-    "prepublish": "npm run build"
+    "docs": "npm run docs:html && npm run docs:md",
+    "docs:html": "rm -rf docs && jsdoc -c .jsdoc.json",
+    "docs:md": "rm -f docs/api.md && jsdoc2md --files mpxAPI.js > docs/api.md",
+    "prepublish": "npm run build",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -19,7 +22,7 @@
     "client"
   ],
   "author": "Perfect Makanju <perfect@marketprotocol.io",
-  "license": "UNLICENSED",
+  "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/MARKETProtocol/mpx-api-client/issues"
   },
@@ -32,8 +35,11 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "babel-polyfill": "^6.26.0",
     "fetch-mock": "^7.3.1",
     "jest": "^24.3.0",
+    "jsdoc": "^3.5.5",
+    "jsdoc-to-markdown": "^4.0.1",
     "node-fetch": "^2.3.0"
   }
 }
