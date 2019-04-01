@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = exports.mpxAPI = exports.Path = exports.MPXAPIError = exports.Errors = void 0;
+exports.mpxAPI = exports.Path = exports.MPXAPIError = exports.Errors = void 0;
 
 var _without = _interopRequireDefault(require("lodash/without"));
 
@@ -37,9 +37,60 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+/////// Type Definitions
+
+/**
+ * Callback for handling a response.
+ * Error would usually be an array of MPXAPIErrors.
+ * 
+ * @callback ResponseHandler
+ * @param {Error} err - Error if any, null if no error
+ * @param {object} data - Parse json-api response data.
+ */
+
+/**
+ * Extra Options objects that are passed to request methods on the
+ * 
+ * 
+ * @typedef {Object} RequestOptions
+ * @property {string} id String value that overrides the id on the resource being requested. defaults to `null`.
+ * @property {string} filterString Filter string, primarily used in get requests. defaults to `null`.
+ * @property {boolean} serializeRequest Flag to state if the payload has should be json-api serialized. defaults to `true`.
+ * @property {boolean} deserialize Flag to state if the response from a request should be json-api deserialized or note. defaults to `false`.
+ * @property {string} authorizationToken Authorization token. Required for request to authenticated paths.
+ */
+////// end Type Definitions
 var host;
+/**
+ * Cache to track register global response handler
+ * 
+ * @private
+ */
+
+var globalResponseHandler = {
+  handler: null,
+  invoke: function invoke(err, data) {
+    if (this.handler) {
+      try {
+        var response = this.handler(err, data);
+
+        if (response.catch) {
+          response.catch(function (err) {// prevent promise handlers from erroring
+          });
+        }
+      } catch (err) {// catch any error in handler
+      }
+    }
+  }
+};
 var Errors = {
   HOST_NOT_SET_ERROR: new Error("host url not set. Invoke the 'setHost()' function with your mpxAPI host")
+  /**
+   * MPXAPIError represents an Error that is gotten from the api response.
+   * It is usually returned as an Array of MPXAPIError.
+   * 
+   */
+
 };
 exports.Errors = Errors;
 
@@ -48,6 +99,11 @@ var MPXAPIError =
 function (_Error) {
   _inherits(MPXAPIError, _Error);
 
+  /**
+   * 
+   * @constructor
+   * @param {Error} error 
+   */
   function MPXAPIError(error) {
     var _this;
 
@@ -64,6 +120,7 @@ function (_Error) {
 /**
  * Appends correct host to path
  *
+ * @private
  * @param {string} path
  * @param {string} filterString
  * @param {string} id
@@ -91,6 +148,7 @@ var url = function url(path, filterString, id) {
  * array, it doesn't extract id from path segment
  *
  *
+ * @private
  * @param {string} path
  * @param {object | object[]} body
  */
@@ -111,6 +169,14 @@ var serializeRequest = function serializeRequest(path, body) {
   }).serialize(body));
   return serializedRequest;
 };
+/**
+ * 
+ * @private
+ * @param {string} path 
+ * @param {object | object[]} body 
+ * @param {boolean} serialize 
+ */
+
 
 var jsonAPIRequestHandler = function jsonAPIRequestHandler(path, body, serialize) {
   return JSON.stringify(serialize ? serializeRequest(path, body) : body);
@@ -118,6 +184,7 @@ var jsonAPIRequestHandler = function jsonAPIRequestHandler(path, body, serialize
 /**
  * Create Auth/UnAuthed Header
  *
+ * @private
  * @param {string} authorizationToken
  */
 
@@ -138,22 +205,25 @@ var createHeader = function createHeader(authorizationToken) {
  * Create a response handle for api requests.
  * Takes an argument to deserialize response according to jsonapi
  *
+ * @private
  * @param {bool} deserialize
- * @return {(object): object}
  */
 
 
 var jsonAPIResponseHandler = function jsonAPIResponseHandler(deserialize) {
   return function (response) {
     if (response.status === 204) {
+      globalResponseHandler.invoke(null, response);
       return response;
     }
 
     return response.json().then(function (json) {
       if (!response.ok) {
-        return Promise.reject((0, _map.default)(json.errors, function (error) {
+        var error = (0, _map.default)(json.errors, function (error) {
           return new MPXAPIError(error);
-        }));
+        });
+        globalResponseHandler.invoke(error);
+        return Promise.reject(error);
       }
 
       if (deserialize) {
@@ -162,28 +232,105 @@ var jsonAPIResponseHandler = function jsonAPIResponseHandler(deserialize) {
         var opts = {
           keyForAttribute: 'camelCase'
         };
-        return new JSONAPIDeserializer(opts).deserialize(json, function (err, deserializedResponse) {
-          return deserializedResponse;
+        return new JSONAPIDeserializer(opts).deserialize(json).then(function (deserializedData) {
+          globalResponseHandler.invoke(null, deserializedData);
+          return deserializedData;
         });
       } else {
         return json;
       }
     });
   };
-}; // paths to API resources
+};
+/**
+ * Path constants that should be used when calling any of the `get`, `post`, etc.
+ * functions on the mpxAPI client
+ * 
+ * @namespace
+ */
 
 
 var Path = {
+  /**
+   * Path to list a summary of all resources and their actions.
+   * 
+   */
+  Root: '/',
+
+  /**
+   * Path to contract resources.
+   * 
+   */
   Contracts: '/contracts',
+
+  /**
+   * Path to fee receipeint resources.
+   * 
+   */
   FeeRecipients: '/fee_recipients',
+
+  /**
+   * Path to fills resources.
+   * 
+   */
   Fills: '/fills',
+
+  /**
+   * Path to perform jwt authentication.
+   * 
+   */
   JWT: '/json_web_tokens',
+
+  /**
+   * Path to profile of current authenticated user.
+   * 
+   */
   Me: '/me',
+
+  /**
+   * Path to orderbook resources.
+   * 
+   */
   OrderBook: '/orderbooks',
+
+  /**
+   * Path to order resources on the API.
+   * 
+   */
   Orders: '/orders',
+
+  /**
+   * Path to API settings
+   * 
+   */
   Settings: '/settings',
+
+  /**
+   * Path to fetch token pairs on the API.
+   * 
+   */
   TokenPairs: '/token_pairs'
 };
+/**
+ * mpxAPI client namespace object.
+ * 
+ * Use the methods on this to to make requests
+ * 
+ * @example
+ * ```
+ * import { mpxAPI, Path } from '@marketprotocol/mpx-api-client'
+ * 
+ * mpxAPI.setHost('https://host-for-mpx-client');
+ * 
+ * // fetch all token pairs
+ * mpxAPI.get(Path.TokenPairs)
+ *  .then(tokenPairs, () => {
+ *    // do what you want tokenPairs
+ *  });
+ * ```
+ * @namespace
+ */
+
 exports.Path = Path;
 var mpxAPI = {
   /**
@@ -197,12 +344,28 @@ var mpxAPI = {
   },
 
   /**
+   * Register a global response handler. 
+   * All response from all requests would be send to this handler is set.
+   * 
+   * To unregister pass in a null handler argument.
+   * 
+   * 
+   * @param {ResponseHandler} handler
+   */
+  setGlobalResponseHandler: function setGlobalResponseHandler(handler) {
+    if (handler !== null && typeof handler !== 'function') {
+      throw new Error('global response handler must either be null or a function.');
+    }
+
+    globalResponseHandler.handler = handler;
+  },
+
+  /**
    * Makes a GET request to the mpxAPI resource at `path`.
    *
-   * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {bool} toJson Flag to convert result to
-   * @return {Promise<*>} result of request
+   * @param {string} path - Path to request API
+   * @param {RequestOptions} options Extra request options
+   * @return {Promise<*>} - Result of request
    */
   get: function get(path) {
     var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
@@ -224,12 +387,11 @@ var mpxAPI = {
   },
 
   /**
-   * Makes a POST request to the marketAPI resource at `path`.
+   * Makes a POST request to the mpxAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {body} body Payload Object
-   * @param {bool} deserialize Flag to convert result to
+   * @param {Object} body Request body payload
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   post: function post(path) {
@@ -260,9 +422,8 @@ var mpxAPI = {
    * Makes a PATCH request to the marketAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {body} body OpenOrder Object
-   * @param {bool} deserialize Flag to convert result to
+   * @param {Object} body Request body payload
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   patch: function patch(path) {
@@ -293,9 +454,8 @@ var mpxAPI = {
    * Makes a PUT request to the marketAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {body} body OpenOrder Object
-   * @param {bool} deserialize Flag to convert result to
+   * @param {Object} body Request body payload
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   put: function put(path) {
@@ -326,8 +486,7 @@ var mpxAPI = {
    * Makes a DELETE request to the marketAPI resource at `path`.
    *
    * @param {string} path Path to request API
-   * @param {function} fetch API fetch function defaults to fetch()
-   * @param {bool} deserialize Flag to convert result to
+   * @param {RequestOptions} options Extra request options
    * @return {Promise<*>} result of request
    */
   delete: function _delete(path) {
@@ -348,8 +507,11 @@ var mpxAPI = {
       headers: createHeader(authorizationToken)
     }).then(jsonAPIResponseHandler(deserialize));
   },
+
+  /**
+   * Alias for the global named export `Path`.
+   * Added for convenience
+   */
   Path: Path
 };
 exports.mpxAPI = mpxAPI;
-var _default = mpxAPI;
-exports.default = _default;
