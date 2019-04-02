@@ -53,7 +53,7 @@ git fetch upstream
 ### Step 2: Branch
 
 It's always better to create local branches to work on a specific issue. If this issue is a new feature,
-please name your branch `feature/featute-name`.  You can also reference the issue number if you like, `featute/feature-name#57`. 
+please name your branch `feature/feature-name`.  You can also reference the issue number if you like, `featute/feature-name#57`. 
 Feature branches should be created directly off of the `develop` branch.
 
 ```shell
