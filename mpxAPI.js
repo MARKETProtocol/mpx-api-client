@@ -7,7 +7,7 @@ import map from 'lodash/map';
 /**
  * Callback for handling a response.
  * Error would usually be an array of MPXAPIErrors.
- * 
+ *
  * @callback ResponseHandler
  * @param {Error} err - Error if any, null if no error
  * @param {object} data - Parse json-api response data.
@@ -15,8 +15,8 @@ import map from 'lodash/map';
 
 /**
  * Extra Options objects that are passed to request methods on the
- * 
- * 
+ *
+ *
  * @typedef {Object} RequestOptions
  * @property {string} id String value that overrides the id on the resource being requested. defaults to `null`.
  * @property {string} filterString Filter string, primarily used in get requests. defaults to `null`.
@@ -31,7 +31,7 @@ let host;
 
 /**
  * Cache to track register global response handler
- * 
+ *
  * @private
  */
 let globalResponseHandler = {
@@ -59,13 +59,13 @@ export const Errors = {
 /**
  * MPXAPIError represents an Error that is gotten from the api response.
  * It is usually returned as an Array of MPXAPIError.
- * 
+ *
  */
 export class MPXAPIError extends Error {
   /**
-   * 
+   *
    * @constructor
-   * @param {Error} error 
+   * @param {Error} error
    */
   constructor(error) {
     super(error.detail || error.title);
@@ -133,11 +133,11 @@ const serializeRequest = (path, body) => {
 };
 
 /**
- * 
+ *
  * @private
- * @param {string} path 
- * @param {object | object[]} body 
- * @param {boolean} serialize 
+ * @param {string} path
+ * @param {object | object[]} body
+ * @param {boolean} serialize
  */
 const jsonAPIRequestHandler = (path, body, serialize) =>
   JSON.stringify(serialize ? serializeRequest(path, body) : body);
@@ -204,73 +204,78 @@ const jsonAPIResponseHandler = deserialize => response => {
 /**
  * Path constants that should be used when calling any of the `get`, `post`, etc.
  * functions on the mpxAPI client
- * 
+ *
  * @namespace
  */
 export const Path = {
   /**
    * Path to list a summary of all resources and their actions.
-   * 
+   *
    */
   Root: '/',
   /**
    * Path to contract resources.
-   * 
+   *
    */
   Contracts: '/contracts',
   /**
    * Path to fee receipeint resources.
-   * 
+   *
    */
   FeeRecipients: '/fee_recipients',
   /**
    * Path to fills resources.
-   * 
+   *
    */
   Fills: '/fills',
   /**
    * Path to perform jwt authentication.
-   * 
+   *
    */
   JWT: '/json_web_tokens',
   /**
    * Path to profile of current authenticated user.
-   * 
+   *
    */
   Me: '/me',
   /**
    * Path to orderbook resources.
-   * 
+   *
    */
   OrderBook: '/orderbooks',
   /**
    * Path to order resources on the API.
-   * 
+   *
    */
   Orders: '/orders',
   /**
    * Path to API settings
-   * 
+   *
    */
   Settings: '/settings',
   /**
    * Path to fetch token pairs on the API.
-   * 
+   *
    */
-  TokenPairs: '/token_pairs'
+  TokenPairs: '/token_pairs',
+  /**
+   * Path to fetch User Settings on the API.
+   *
+   */
+  UserSettings: '/user_settings'
 };
 
 /**
  * mpxAPI client namespace object.
- * 
+ *
  * Use the methods on this to to make requests
- * 
+ *
  * @example
  * ```
  * import { mpxAPI, Path } from '@marketprotocol/mpx-api-client'
- * 
+ *
  * mpxAPI.setHost('https://host-for-mpx-client');
- * 
+ *
  * // fetch all token pairs
  * mpxAPI.get(Path.TokenPairs)
  *  .then(tokenPairs, () => {
@@ -291,12 +296,12 @@ export const mpxAPI = {
   },
 
   /**
-   * Register a global response handler. 
+   * Register a global response handler.
    * All response from all requests would be send to this handler is set.
-   * 
+   *
    * To unregister pass in a null handler argument.
-   * 
-   * 
+   *
+   *
    * @param {ResponseHandler} handler
    */
   setGlobalResponseHandler(handler) {
