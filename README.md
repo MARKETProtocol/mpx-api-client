@@ -24,12 +24,12 @@ First, you would need to set the host for the mpxAPI client.
 
 ```javascript
 import { mpxAPI, Path } from '@marketprotocol/mpx-api-client'
- 
-mpxAPI.setHost('https://host-for-mpx-client');
+
+mpxAPI.setHost('https://api.mpexchange.io');
 ```
 This ensures that the client always makes a request to the set api environment (kovan/mainnet).
 
-The `mpxAPI` namespace object provides HTTP methods (`get`, `post`, `patch` etc) to make requests to the corresponding resource on MPX API. Each of these methods return a promise that resolves 
+The `mpxAPI` namespace object provides HTTP methods (`get`, `post`, `patch` etc) to make requests to the corresponding resource on MPX API. Each of these methods return a promise that resolves
 to the response of the data of the api request else if rejects with an Array of `MPXAPIError`.
 
 For example, to get the list of `tokenPair` listed on the exchange, you do:
