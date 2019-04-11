@@ -274,7 +274,7 @@ export const Path = {
  * ```
  * import { mpxAPI, Path } from '@marketprotocol/mpx-api-client'
  *
- * mpxAPI.setHost('https://host-for-mpx-client');
+ * mpxAPI.setHost('https://api.mpexchange.io');
  *
  * // fetch all token pairs
  * mpxAPI.get(Path.TokenPairs)
