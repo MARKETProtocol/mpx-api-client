@@ -249,6 +249,11 @@ export const Path = {
    */
   Orders: '/orders',
   /**
+   * Path to asset rates in the MPX Ecosystem.
+   *
+   */
+  Rates: '/rates',
+  /**
    * Path to API settings
    *
    */

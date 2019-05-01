@@ -42,7 +42,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 /**
  * Callback for handling a response.
  * Error would usually be an array of MPXAPIErrors.
- * 
+ *
  * @callback ResponseHandler
  * @param {Error} err - Error if any, null if no error
  * @param {object} data - Parse json-api response data.
@@ -50,8 +50,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 /**
  * Extra Options objects that are passed to request methods on the
- * 
- * 
+ *
+ *
  * @typedef {Object} RequestOptions
  * @property {string} id String value that overrides the id on the resource being requested. defaults to `null`.
  * @property {string} filterString Filter string, primarily used in get requests. defaults to `null`.
@@ -63,7 +63,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 var host;
 /**
  * Cache to track register global response handler
- * 
+ *
  * @private
  */
 
@@ -88,7 +88,7 @@ var Errors = {
   /**
    * MPXAPIError represents an Error that is gotten from the api response.
    * It is usually returned as an Array of MPXAPIError.
-   * 
+   *
    */
 
 };
@@ -100,9 +100,9 @@ function (_Error) {
   _inherits(MPXAPIError, _Error);
 
   /**
-   * 
+   *
    * @constructor
-   * @param {Error} error 
+   * @param {Error} error
    */
   function MPXAPIError(error) {
     var _this;
@@ -170,11 +170,11 @@ var serializeRequest = function serializeRequest(path, body) {
   return serializedRequest;
 };
 /**
- * 
+ *
  * @private
- * @param {string} path 
- * @param {object | object[]} body 
- * @param {boolean} serialize 
+ * @param {string} path
+ * @param {object | object[]} body
+ * @param {boolean} serialize
  */
 
 
@@ -245,7 +245,7 @@ var jsonAPIResponseHandler = function jsonAPIResponseHandler(deserialize) {
 /**
  * Path constants that should be used when calling any of the `get`, `post`, etc.
  * functions on the mpxAPI client
- * 
+ *
  * @namespace
  */
 
@@ -253,75 +253,87 @@ var jsonAPIResponseHandler = function jsonAPIResponseHandler(deserialize) {
 var Path = {
   /**
    * Path to list a summary of all resources and their actions.
-   * 
+   *
    */
   Root: '/',
 
   /**
    * Path to contract resources.
-   * 
+   *
    */
   Contracts: '/contracts',
 
   /**
    * Path to fee receipeint resources.
-   * 
+   *
    */
   FeeRecipients: '/fee_recipients',
 
   /**
    * Path to fills resources.
-   * 
+   *
    */
   Fills: '/fills',
 
   /**
    * Path to perform jwt authentication.
-   * 
+   *
    */
   JWT: '/json_web_tokens',
 
   /**
    * Path to profile of current authenticated user.
-   * 
+   *
    */
   Me: '/me',
 
   /**
    * Path to orderbook resources.
-   * 
+   *
    */
   OrderBook: '/orderbooks',
 
   /**
    * Path to order resources on the API.
-   * 
+   *
    */
   Orders: '/orders',
 
   /**
+   * Path to asset rates in the MPX Ecosystem.
+   *
+   */
+  Rates: '/rates',
+
+  /**
    * Path to API settings
-   * 
+   *
    */
   Settings: '/settings',
 
   /**
    * Path to fetch token pairs on the API.
-   * 
+   *
    */
-  TokenPairs: '/token_pairs'
+  TokenPairs: '/token_pairs',
+
+  /**
+   * Path to fetch User Settings on the API.
+   *
+   */
+  UserSettings: '/user_settings'
 };
 /**
  * mpxAPI client namespace object.
- * 
+ *
  * Use the methods on this to to make requests
- * 
+ *
  * @example
  * ```
  * import { mpxAPI, Path } from '@marketprotocol/mpx-api-client'
- * 
- * mpxAPI.setHost('https://host-for-mpx-client');
- * 
+ *
+ * mpxAPI.setHost('https://api.mpexchange.io');
+ *
  * // fetch all token pairs
  * mpxAPI.get(Path.TokenPairs)
  *  .then(tokenPairs, () => {
@@ -344,12 +356,12 @@ var mpxAPI = {
   },
 
   /**
-   * Register a global response handler. 
+   * Register a global response handler.
    * All response from all requests would be send to this handler is set.
-   * 
+   *
    * To unregister pass in a null handler argument.
-   * 
-   * 
+   *
+   *
    * @param {ResponseHandler} handler
    */
   setGlobalResponseHandler: function setGlobalResponseHandler(handler) {
