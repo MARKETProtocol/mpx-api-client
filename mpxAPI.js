@@ -239,6 +239,11 @@ export const Path = {
    */
   Me: '/me',
   /**
+   * Path to user notifications
+   *
+   */
+  Notifications: '/notifications',
+  /**
    * Path to orderbook resources.
    *
    */
