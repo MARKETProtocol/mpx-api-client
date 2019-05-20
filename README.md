@@ -1,3 +1,5 @@
+<img src="https://github.com/MARKETProtocol/website/blob/develop/src/assets/images/MARKETProtocol-Light.png?raw=true" align="middle">
+
 # MPX API Client
 [![Build Status](https://travis-ci.com/MARKETProtocol/mpx-api-client.svg?branch=master)](https://travis-ci.com/MARKETProtocol/mpx-api-client)
 
