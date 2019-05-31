@@ -1,7 +1,7 @@
-import without from 'lodash/without';
-import kebabCase from 'lodash/kebabCase';
-import pick from 'lodash/pick';
-import map from 'lodash/map';
+import without from "lodash/without";
+import kebabCase from "lodash/kebabCase";
+import pick from "lodash/pick";
+import map from "lodash/map";
 
 /////// Type Definitions
 /**
@@ -43,7 +43,7 @@ let globalResponseHandler = {
         if (response.catch) {
           response.catch(err => {
             // prevent promise handlers from erroring
-          })
+          });
         }
       } catch (err) {
         // catch any error in handler
@@ -53,8 +53,10 @@ let globalResponseHandler = {
 };
 
 export const Errors = {
-  HOST_NOT_SET_ERROR: new Error(`host url not set. Invoke the 'setHost()' function with your mpxAPI host`)
-}
+  HOST_NOT_SET_ERROR: new Error(
+    `host url not set. Invoke the 'setHost()' function with your mpxAPI host`
+  )
+};
 
 /**
  * MPXAPIError represents an Error that is gotten from the api response.
@@ -73,7 +75,7 @@ export class MPXAPIError extends Error {
     // set error properties on the property error
     Object.assign(
       this,
-      pick(error, ['id', 'status', 'code', 'title', 'detail'])
+      pick(error, ["id", "status", "code", "title", "detail"])
     );
   }
 }
@@ -88,14 +90,14 @@ export class MPXAPIError extends Error {
  * @return {string}
  */
 const url = (path, filterString, id) => {
-  if (typeof host !== 'string') {
+  if (typeof host !== "string") {
     throw Errors.HOST_NOT_SET_ERROR;
   }
   const url =
     host +
     path +
-    (id !== null ? `/${id}` : '') +
-    (filterString !== null ? `${'?' + filterString}` : '');
+    (id !== null ? `/${id}` : "") +
+    (filterString !== null ? `${"?" + filterString}` : "");
 
   return url;
 };
@@ -115,8 +117,8 @@ const url = (path, filterString, id) => {
  * @param {object | object[]} body
  */
 const serializeRequest = (path, body) => {
-  const JSONAPISerializer = require('jsonapi-serializer').Serializer;
-  const pathSegments = path.split('/').filter(Boolean);
+  const JSONAPISerializer = require("jsonapi-serializer").Serializer;
+  const pathSegments = path.split("/").filter(Boolean);
   const type = body.type || kebabCase(pathSegments[0]);
 
   if (!Array.isArray(body) && !body.id && pathSegments[1]) {
@@ -125,7 +127,7 @@ const serializeRequest = (path, body) => {
 
   const serializedRequest = Object.assign(
     new JSONAPISerializer(type, {
-      attributes: without(Object.keys(body), 'id')
+      attributes: without(Object.keys(body), "id")
     }).serialize(body)
   );
 
@@ -151,12 +153,12 @@ const jsonAPIRequestHandler = (path, body, serialize) =>
 const createHeader = authorizationToken => {
   if (authorizationToken) {
     return {
-      'Content-Type': 'application/vnd.api+json',
+      "Content-Type": "application/vnd.api+json",
       Authorization: `Bearer ${authorizationToken}`
     };
   } else {
     return {
-      'Content-Type': 'application/vnd.api+json'
+      "Content-Type": "application/vnd.api+json"
     };
   }
 };
@@ -176,21 +178,19 @@ const jsonAPIResponseHandler = deserialize => response => {
 
   return response.json().then(json => {
     if (!response.ok) {
-      const error = map(
-        json.errors,
-        error => new MPXAPIError(error)
-      );
+      const error = map(json.errors, error => new MPXAPIError(error));
       globalResponseHandler.invoke(error);
       return Promise.reject(error);
     }
 
     if (deserialize) {
-      const JSONAPIDeserializer = require('jsonapi-serializer').Deserializer;
+      const JSONAPIDeserializer = require("jsonapi-serializer").Deserializer;
       const opts = {
-        keyForAttribute: 'camelCase'
+        keyForAttribute: "camelCase"
       };
 
-      return new JSONAPIDeserializer(opts).deserialize(json)
+      return new JSONAPIDeserializer(opts)
+        .deserialize(json)
         .then(deserializedData => {
           globalResponseHandler.invoke(null, deserializedData);
           return deserializedData;
@@ -212,67 +212,77 @@ export const Path = {
    * Path to list a summary of all resources and their actions.
    *
    */
-  Root: '/',
+  Root: "/",
   /**
    * Path to contract resources.
    *
    */
-  Contracts: '/contracts',
+  Contracts: "/contracts",
   /**
    * Path to fee receipeint resources.
    *
    */
-  FeeRecipients: '/fee_recipients',
+  FeeRecipients: "/fee_recipients",
   /**
    * Path to fills resources.
    *
    */
-  Fills: '/fills',
+  Fills: "/fills",
   /**
    * Path to perform jwt authentication.
    *
    */
-  JWT: '/json_web_tokens',
+  JWT: "/json_web_tokens",
   /**
    * Path to profile of current authenticated user.
    *
    */
-  Me: '/me',
+  Me: "/me",
   /**
    * Path to user notifications
    *
    */
-  Notifications: '/notifications',
+  Notifications: "/notifications",
   /**
    * Path to orderbook resources.
    *
    */
-  OrderBook: '/orderbooks',
+  OrderBook: "/orderbooks",
   /**
    * Path to order resources on the API.
    *
    */
-  Orders: '/orders',
+  Orders: "/orders",
   /**
    * Path to asset rates in the MPX Ecosystem.
    *
    */
-  Rates: '/rates',
+  Rates: "/rates",
+  /**
+   * Path to fetch Position Token Events on the API.
+   *
+   */
+  PositionTokenEvents: "/position_token_events",
   /**
    * Path to API settings
    *
    */
-  Settings: '/settings',
+  Settings: "/settings",
   /**
    * Path to fetch token pairs on the API.
    *
    */
-  TokenPairs: '/token_pairs',
+  TokenPairs: "/token_pairs",
   /**
    * Path to fetch User Settings on the API.
    *
    */
-  UserSettings: '/user_settings'
+  UserSettings: "/user_settings",
+  /**
+   * Path to fetch User Rewards on the API.
+   *
+  */
+  UserRewards: "/user_rewards"
 };
 
 /**
@@ -315,8 +325,10 @@ export const mpxAPI = {
    * @param {ResponseHandler} handler
    */
   setGlobalResponseHandler(handler) {
-    if (handler !== null && typeof handler !== 'function') {
-      throw new Error('global response handler must either be null or a function.');
+    if (handler !== null && typeof handler !== "function") {
+      throw new Error(
+        "global response handler must either be null or a function."
+      );
     }
 
     globalResponseHandler.handler = handler;
@@ -340,7 +352,7 @@ export const mpxAPI = {
     } = {}
   ) {
     return fetch(url(path, filterString, id), {
-      method: 'GET',
+      method: "GET",
       headers: createHeader(authorizationToken)
     }).then(jsonAPIResponseHandler(deserialize));
   },
@@ -366,7 +378,7 @@ export const mpxAPI = {
     } = {}
   ) {
     return fetch(url(path, filterString, id), {
-      method: 'POST',
+      method: "POST",
       headers: createHeader(authorizationToken),
       body: jsonAPIRequestHandler(path, body, serializeRequest)
     }).then(jsonAPIResponseHandler(deserialize));
@@ -393,7 +405,7 @@ export const mpxAPI = {
     } = {}
   ) {
     return fetch(url(path, filterString, id), {
-      method: 'PATCH',
+      method: "PATCH",
       headers: createHeader(authorizationToken),
       body: jsonAPIRequestHandler(path, body, serializeRequest)
     }).then(jsonAPIResponseHandler(deserialize));
@@ -420,7 +432,7 @@ export const mpxAPI = {
     } = {}
   ) {
     return fetch(url(path, filterString, id), {
-      method: 'PUT',
+      method: "PUT",
       headers: createHeader(authorizationToken),
       body: jsonAPIRequestHandler(path, body, serializeRequest)
     }).then(jsonAPIResponseHandler(deserialize));
@@ -444,7 +456,7 @@ export const mpxAPI = {
     } = {}
   ) {
     return fetch(url(path, filterString, id), {
-      method: 'DELETE',
+      method: "DELETE",
       headers: createHeader(authorizationToken)
     }).then(jsonAPIResponseHandler(deserialize));
   },
@@ -453,5 +465,5 @@ export const mpxAPI = {
    * Alias for the global named export `Path`.
    * Added for convenience
    */
-  Path,
+  Path
 };
